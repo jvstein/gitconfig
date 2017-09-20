@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# git-loga
+# Show the distinct authors for a call to git-log.
+git log --format='%aN <%aE>' "$@" | sort -u

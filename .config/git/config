@@ -1,0 +1,121 @@
+[user]
+    name = Jeff Stein
+[advice]
+	detachedHead = false
+    statusHints = false
+[color]
+    diff = auto
+    status = auto
+    branch = auto
+    grep = auto
+    interactive = auto
+    ui = true
+[merge]
+    tool = vimmerge
+[mergetool]
+    trustExitCode = true
+    prompt = false
+    keepBackup = false
+    writeToTemp = true
+[mergetool "vimmerge"]
+    cmd = git-vimmerge vim $BASE $LOCAL $REMOTE $MERGED
+    trustExitCode = true
+#[core]
+#    gitproxy = git-proxy
+[diff]
+    external = git-diff-wrapper
+    mnemonicPrefix = true
+    renames = copies
+    submodule = log
+    tool = vimdiff
+[diff "exif"]
+    textconv = identify -verbose
+    cachetextconv = true
+[diff "html"]
+    xfuncname = html
+[diff "image"]
+    textconv = img2ascii -p 2 -w 2
+    cachetextconv = true
+    extdiffcmd = vimdiff -c 'windo diffoff' -c 'windo set nowrap' -c 'windo AnsiEsc'
+[diff "java"]
+    xfuncname = java
+[diff "python"]
+    xfuncname = python
+[difftool]
+    prompt = false
+    trustExitCode = true
+[grep]
+    patternType = perl
+[pager]
+    diff =
+[status]
+    submoduleSummary = true
+[alias]
+    cm = commit -m
+    co = checkout
+    dn = diff --no-ext-diff
+    dc = diff --cached
+    l = ls-files
+    lol = log --graph --pretty=format:'%C(yellow)%h%C(auto)%d%C(reset) %s %C(cyan)[%an] %C(green)[%ad]%C(reset)' --abbrev-commit --date=relative --author-date-order
+    lolnc = log --graph --pretty=format:'%h%d %s [%ad] [%an]' --abbrev-commit --date=relative --author-date-order
+    st = status -s
+    sc = log --stat -p -n 1
+    scf = diff-tree --no-commit-id --name-only -r
+    fixws = !"\
+      if (! git diff-files --quiet .) && \
+         (! git diff-index --quiet --cached HEAD) ; then \
+        git commit --no-verify -m FIXWS_SAVE_INDEX && \
+        git stash save FIXWS_SAVE_TREE && \
+        git rebase --whitespace=fix HEAD~ && \
+        git reset --soft HEAD~ && \
+        git stash pop ; \
+      elif (! git diff-index --quiet --cached HEAD) ; then \
+        git commit --no-verify -m FIXWS_SAVE_INDEX && \
+        git rebase --whitespace=fix HEAD~ && \
+        git reset --soft HEAD~ ; \
+      fi"
+    fixws-all = !"\
+      if (! git diff-files --quiet .) && \
+         (! git diff-index --quiet --cached HEAD) ; then \
+        git commit --no-verify -m FIXWS_SAVE_INDEX && \
+        git add -u :/ && \
+        git commit --no-verify -m FIXWS_SAVE_TREE && \
+        git rebase --whitespace=fix HEAD~2 && \
+        git reset HEAD~ && \
+        git reset --soft HEAD~ ; \
+      elif (! git diff-files --quiet .) ; then \
+        git add -u :/ && \
+        git commit --no-verify -m FIXWS_SAVE_TREE && \
+        git rebase --whitespace=fix HEAD~ && \
+        git reset HEAD~ ; \
+      elif (! git diff-index --quiet --cached HEAD) ; then \
+        git commit --no-verify -m FIXWS_SAVE_INDEX && \
+        git rebase --whitespace=fix HEAD~ && \
+        git reset --soft HEAD~ ; \
+      fi"
+[tgit]
+    logminsize = 5
+    logwidthmarker = 80
+[pull]
+	ff = only
+[push]
+    default = current
+[help]
+    autocorrect = 1
+[gui]
+    editor = geany
+[filter "tabspace"]
+    smudge = expand --tabs=4
+    clean = unexpand --tabs=4
+[filter "tabspace2"]
+    smudge = expand --tabs=2
+    clean = unexpand --tabs=2
+
+#[url "ssh://git@github.com/"]
+#	insteadOf = https://github.com/
+[url "https://github.com/"]
+	insteadOf = git://github.com/
+
+# local machine overrides
+[include]
+    path = ~/.gitconfig.local

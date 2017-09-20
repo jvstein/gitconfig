@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# img2ascii
+# Converts an image to ascii text for terminal display.
+
+set -e
+
+num=1
+pad=3
+while getopts "p:w:" flag
+do
+    case "$flag" in
+        p) pad=${OPTARG} ;;
+        w) num=${OPTARG} ;;
+    esac
+done
+shift $(($OPTIND-1))
+
+if [[ "$1" = "" ]]; then
+    echo "Usage: $(basename "$0") [-p PADDING] [-w NUM_WIDE] FILE"
+    exit 1
+fi
+
+sideBySideBuffer=$(($pad*$(($num - 1))))
+screenWidth=$(stty size | cut -d " " -f2)
+screenWidthMinusBuffer=$(expr $screenWidth - $sideBySideBuffer)
+perDiffWidth=$(expr $screenWidthMinusBuffer / $num)
+
+file=$1
+
+filename=$(basename "$file")
+ext=${filename##*.}
+
+if [[ -f "$file" ]]; then
+  convert "$file" jpg:- | jp2a --color --width=$perDiffWidth -
+fi

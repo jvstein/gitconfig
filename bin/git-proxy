@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# git-proxy
+# Connects to a SOCKS proxy using netcat.
+#   Use `ssh -D 1080 host` to start the proxy.
+
+proxy="localhost:1080"
+
+p=$(git config --get socks.proxy)
+if [[ $? -eq 0 ]] && [[ ! -z $p ]]; then
+    proxy=p
+fi
+
+nc -x "$proxy" "$1" "$2"

@@ -1,0 +1,16 @@
+# ascii image diff
+*.apng  diff=image
+*.bmp   diff=image
+*.BMP   diff=image
+*.gif   diff=image
+*.GIF   diff=image
+*.ico   diff=image
+*.jpg   diff=image
+*.JPG   diff=image
+*.jpeg  diff=image
+*.JPEG  diff=image
+*.pdf   diff=image
+*.png   diff=image
+*.PNG   diff=image
+*.tiff  diff=image
+*.TIFF  diff=image

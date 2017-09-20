@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# git-diff-wrapper
+# Wrapper for vimdiff that uses textconv
+
+if [[ $# -lt 5 ]]; then
+    echo "Call from git"
+    exit 1
+fi
+
+tmp=$(mktemp -d)
+
+left="$2"
+right="$5"
+diff="$(git check-attr diff -- "$1" | awk '{print $3}')"
+tool="$(git config --get "diff.tool")"
+
+if [[ "unspecified" != "$diff" ]]; then
+    textconv="$(git config --get "diff.${diff}.textconv")"
+    ctool="$(git config --get "diff.${diff}.extdiffcmd")"
+    if [[ ! -z "$textconv" ]]; then
+        if [[ "$left" != "/dev/null" ]]; then
+            orig="$left"
+            left="$tmp/$(basename "$left")"
+            "$textconv" "$orig" > "$left"
+        fi
+
+        # TODO: what does git for Windows say here?
+        if [[ "$right" != "/dev/null" ]]; then
+            orig="$right"
+            right="$tmp/$(basename "$right")"
+            "$textconv" "$orig" > "$right"
+        fi
+        # TODO: support cachetextconv
+    fi
+    if [[ ! -z "$ctool" ]]; then
+        tool=$ctool
+    fi
+fi
+
+eval "$tool" "'$left'" "'$right'"
+e=$?
+#cp $tmp/left /tmp
+#cp $tmp/right /tmp
+rm -rf "$tmp"
+exit $e
