@@ -21,14 +21,14 @@ if [[ "unspecified" != "$diff" ]]; then
         if [[ "$left" != "/dev/null" ]]; then
             orig="$left"
             left="$tmp/$(basename "$left")"
-            "$textconv" "$orig" > "$left"
+            $textconv "$orig" > "$left"
         fi
 
         # TODO: what does git for Windows say here?
         if [[ "$right" != "/dev/null" ]]; then
             orig="$right"
             right="$tmp/$(basename "$right")"
-            "$textconv" "$orig" > "$right"
+            $textconv "$orig" > "$right"
         fi
         # TODO: support cachetextconv
     fi
