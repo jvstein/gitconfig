@@ -20,8 +20,9 @@
 [mergetool "vimmerge"]
     cmd = git-vimmerge vim $BASE $LOCAL $REMOTE $MERGED
     trustExitCode = true
-#[core]
+[core]
 #    gitproxy = git-proxy
+    sshCommand = ~/bin/git-ssh
 [diff]
     external = git-diff-wrapper
     mnemonicPrefix = true

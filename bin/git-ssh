@@ -1,0 +1,6 @@
+#!/bin/sh
+if [ ! -z "$GIT_SSH_KEY" ]; then
+    ssh -i "$GIT_SSH_KEY" "$@"
+else
+    ssh "$@"
+fi
