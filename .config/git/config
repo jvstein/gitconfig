@@ -1,7 +1,7 @@
 [user]
     name = Jeff Stein
 [advice]
-	detachedHead = false
+    detachedHead = false
     statusHints = false
 [color]
     diff = auto
@@ -98,7 +98,7 @@
     logminsize = 5
     logwidthmarker = 80
 [pull]
-	ff = only
+    ff = only
 [push]
     default = current
 [help]
@@ -113,9 +113,9 @@
     clean = unexpand --tabs=2
 
 #[url "ssh://git@github.com/"]
-#	insteadOf = https://github.com/
+#   insteadOf = https://github.com/
 [url "https://github.com/"]
-	insteadOf = git://github.com/
+    insteadOf = git://github.com/
 
 # local machine overrides
 [include]
