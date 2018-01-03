@@ -5,7 +5,9 @@ Some git things, along with my gitconfig.
   - git-diff-wrapper (support textconv and extdiffcmd via gitattributes)
   - git-loga (distinct authors for a commit-ish using "git log")
   - git-proxy (pipe git:// over a socks proxy, e.g. via ssh)
+  - git-ssh (set the ssh key used by git with the GIT_SSH_KEY env variable)
   - git-vimmerge (slightly modified version of [diffconflicts])
+  - img2ascii (converts images to ASCII art using ImageMagick; used with git-diff-wrapper)
 
 ## Third party
   - [git-activity] (show ref activity; from [git-pastiche])
