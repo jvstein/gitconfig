@@ -21,6 +21,7 @@
     cmd = git-vimmerge vim $BASE $LOCAL $REMOTE $MERGED
     trustExitCode = true
 [core]
+    excludesFile = ~/.gitignore_global
 #    gitproxy = git-proxy
     sshCommand = ~/bin/git-ssh
 [diff]
@@ -38,6 +39,8 @@
     textconv = img2ascii -p 2 -w 2
     cachetextconv = true
     extdiffcmd = vimdiff -c 'windo diffoff' -c 'windo set nowrap' -c 'windo AnsiEsc'
+[diff "image-kitty"]
+    extdiffcmd = kitty +kitten diff
 [diff "java"]
     xfuncname = java
 [diff "python"]
@@ -45,14 +48,22 @@
 [difftool]
     prompt = false
     trustExitCode = true
+[difftool "kitty"]
+    cmd = kitty +kitten diff $LOCAL $REMOTE
+[difftool "kitty.gui"]
+    cmd = kitty kitty +kitten diff $LOCAL $REMOTE
 [grep]
     patternType = perl
 [pager]
     diff =
+    branch =
 [status]
     submoduleSummary = true
 [alias]
+    ca = commit --amend
+    can = commit --amend --no-edit
     cm = commit -m
+    cmn = commit -n -m
     co = checkout
     dn = diff --no-ext-diff
     dc = diff --cached
@@ -62,6 +73,8 @@
     st = status -s
     sc = log --stat -p -n 1
     scf = diff-tree --no-commit-id --name-only -r
+    ignore = update-index --add --assume-unchanged
+    unignore = update-index --no-assume-unchanged
     fixws = !"\
       if (! git diff-files --quiet .) && \
          (! git diff-index --quiet --cached HEAD) ; then \
@@ -105,6 +118,11 @@
     autocorrect = 1
 [gui]
     editor = geany
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
 [filter "tabspace"]
     smudge = expand --tabs=4
     clean = unexpand --tabs=4

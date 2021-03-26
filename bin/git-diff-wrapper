@@ -1,45 +1,81 @@
 #!/usr/bin/env bash
 # git-diff-wrapper
-# Wrapper for vimdiff that uses textconv
+# Wrapper for the git diff handling.
+#
+# Example git config:
+#
+#   [diff]
+#     external = git-diff-wrapper
+#     tool = vimdiff
+#
+#   [diff "image"]
+#     textconv = img2ascii -p 2 -w 2
+#     extdiffcmd = vimdiff -c 'windo diffoff' -c 'windo set nowrap' -c 'windo AnsiEsc'
+#
+#   [diff "image-kitty"]
+#     extdiffcmd = kitty +kitten diff
 
 if [[ $# -lt 5 ]]; then
     echo "Call from git"
     exit 1
 fi
 
-tmp=$(mktemp -d)
+if [[ ! -t 1 ]]; then
+  # Workaround for git-hyper-blame and other tools that don't know how to bypass external diff tools.
+  # stdout is not a terminal. Call the (likely) "git diff" command with "--no-ext-diff".
+  command=$(cat /proc/$PPID/cmdline | awk -F[[:cntrl:]] '{ for ( i = 1; i < NF; i++ ) printf( "'%s' ", $i ) }')
+  eval $command --no-ext-diff
+  exit $?
+fi
+
+function do_textconv() {
+  file=$1
+  if [[ $file == "/dev/null" ]]; then
+    echo $file
+  else
+    new_file="$tmp/$(basename "$file")"
+    $textconv "$file" > "$new_file"
+    echo "$new_file"
+  fi
+}
 
 left="$2"
 right="$5"
-diff="$(git check-attr diff -- "$1" | awk '{print $3}')"
+textconv=""
 tool="$(git config --get "diff.tool")"
+diff="$(git check-attr diff -- "$1" | awk '{print $3}')"
+
+# Special override if we have the kitty terminal diff tool.
+# This does work over ssh. kitty versions probably need to be close.
+if [[ $TERM == "xterm-kitty" ]] && [[ $diff == "image" ]] && hash kitty 2> /dev/null; then
+  diff="image-kitty"
+fi
 
 if [[ "unspecified" != "$diff" ]]; then
-    textconv="$(git config --get "diff.${diff}.textconv")"
-    ctool="$(git config --get "diff.${diff}.extdiffcmd")"
-    if [[ ! -z "$textconv" ]]; then
-        if [[ "$left" != "/dev/null" ]]; then
-            orig="$left"
-            left="$tmp/$(basename "$left")"
-            $textconv "$orig" > "$left"
-        fi
+  textconv="$(git config --get "diff.${diff}.textconv")"
+  ctool="$(git config --get "diff.${diff}.extdiffcmd")"
+  if [[ ! -z "$ctool" ]]; then
+    tool=$ctool
+  fi
+fi
 
-        # TODO: what does git for Windows say here?
-        if [[ "$right" != "/dev/null" ]]; then
-            orig="$right"
-            right="$tmp/$(basename "$right")"
-            $textconv "$orig" > "$right"
-        fi
-        # TODO: support cachetextconv
-    fi
-    if [[ ! -z "$ctool" ]]; then
-        tool=$ctool
-    fi
+if [[ $diff == "lfs" ]]; then
+    echo "Skipping LFS file: '$left' '$right'"
+    exit 0
+fi
+
+if [[ -n $textconv ]]; then
+  tmp=$(mktemp -d)
+  # TODO: support cachetextconv
+  if [[ ! -z "$textconv" ]]; then
+    left=$(do_textconv "$left")
+    right=$(do_textconv "$right")
+  fi
 fi
 
 eval "$tool" "'$left'" "'$right'"
 e=$?
-#cp $tmp/left /tmp
-#cp $tmp/right /tmp
-rm -rf "$tmp"
+if [[ -n $textconv ]]; then
+  rm -rf "$tmp"
+fi
 exit $e
