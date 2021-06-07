@@ -1,0 +1,3 @@
+#!/bin/sh
+# Convert CSV file into a format easier to diff.
+perl -pe 's/((?<=,)|(?<=^)),/ ,/g;' "$@" | column -t -s,

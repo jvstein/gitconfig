@@ -14,3 +14,6 @@
 *.PNG   diff=image
 *.tiff  diff=image
 *.TIFF  diff=image
+*.csv   diff=csv
+*.csv.failed   diff=csv
+

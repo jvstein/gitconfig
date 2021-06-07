@@ -45,6 +45,8 @@
     xfuncname = java
 [diff "python"]
     xfuncname = python
+[diff "csv"]
+    textconv = csv2txt
 [difftool]
     prompt = false
     trustExitCode = true
@@ -138,3 +140,5 @@
 # local machine overrides
 [include]
     path = ~/.gitconfig.local
+[init]
+	defaultBranch = main
