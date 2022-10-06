@@ -21,7 +21,6 @@
     cmd = git-vimmerge vim $BASE $LOCAL $REMOTE $MERGED
     trustExitCode = true
 [core]
-    excludesFile = ~/.gitignore_global
 #    gitproxy = git-proxy
     sshCommand = ~/bin/git-ssh
 [diff]
@@ -121,10 +120,10 @@
 [gui]
     editor = geany
 [filter "lfs"]
-	clean = git-lfs clean -- %f
-	smudge = git-lfs smudge -- %f
-	process = git-lfs filter-process
-	required = true
+    clean = git-lfs clean -- %f
+    smudge = git-lfs smudge -- %f
+    process = git-lfs filter-process
+    required = true
 [filter "tabspace"]
     smudge = expand --tabs=4
     clean = unexpand --tabs=4
@@ -141,4 +140,8 @@
 [include]
     path = ~/.gitconfig.local
 [init]
-	defaultBranch = main
+    defaultBranch = main
+[credential]
+    helper = cache
+[rebase]
+    instructionFormat = %s [%an] [%ad]
