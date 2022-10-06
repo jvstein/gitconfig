@@ -2,12 +2,13 @@
 Some git things, along with my gitconfig.
 
 ## Mine
-  - git-diff-wrapper (support textconv and extdiffcmd via gitattributes)
-  - git-loga (distinct authors for a commit-ish using "git log")
-  - git-proxy (pipe git:// over a socks proxy, e.g. via ssh)
-  - git-ssh (set the ssh key used by git with the GIT_SSH_KEY env variable)
-  - git-vimmerge (slightly modified version of [diffconflicts])
-  - img2ascii (converts images to ASCII art using ImageMagick; used with git-diff-wrapper)
+  - [`git-diff-wrapper`](bin/git-diff-wrapper) (support textconv and extdiffcmd via gitattributes)
+  - [`git-loga`](bin/git-loga) (distinct authors for a commit-ish using "git log")
+  - [`git-proxy`](bin/git-proxy) (pipe git:// over a socks proxy, e.g. via ssh)
+  - [`git-prune-local`](bin/git-prune-local) (prune local branches after remote deletion)
+  - [`git-ssh`](bin/git-ssh) (set the ssh key used by git with the GIT_SSH_KEY env variable)
+  - [`git-vimmerge`](bin/git-vimmerge) (slightly modified version of [diffconflicts])
+  - [`img2ascii`](bin/img2ascii) (converts images to ASCII art using ImageMagick; used with git-diff-wrapper)
 
 ## Third party
   - [git-activity] (show ref activity; from [git-pastiche])

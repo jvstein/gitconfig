@@ -1,0 +1,81 @@
+#!/bin/bash
+# Show and/or delete branches that have been removed from a given remote.
+#
+# By default nothing is deleted, and prunable branches are output to stdout.
+#
+# When running with -f, this script will delete any matching branches. The output of
+# git branch -D is left intact and can be used to recreate any branch that is deleted.
+# It is recommended that you save the output if you are unsure about the deletes.
+#
+#   git-prune-local -f | tee deleted.txt
+
+usage() {
+  echo "Usage: "$0" [-h] [-r REMOTE] [-f]"
+  echo "Delete local branches that point to non-existent remote branches."
+  echo ""
+  echo "Before running this script, prune your remote branches."
+  echo "  git fetch origin --prune"
+  echo ""
+  echo "  -h          Show help"
+  echo "  -r REMOTE   Specify which remote to operate on. Otherwise works on all remotes."
+  echo "  -u          Run 'git fetch origin --prune' first."
+  echo "  -f          Perform the branch deletion. Otherwise just display branches."
+}
+
+remote=""
+fetch=0
+output=(cat)
+while getopts "hfur:" flag
+do
+  case "${flag}" in
+    f)  output=(xargs --no-run-if-empty git branch -D) ;;
+    r)  remote="${OPTARG}" ;;
+    u)  fetch=1 ;;
+    h)  usage; exit 0 ;;
+    *)  usage; exit 1 ;;
+  esac
+done
+shift $((OPTIND-1))
+
+if [[ $# -gt 0 ]]; then
+  echo "ERROR! Script takes no arguments" >&2
+  usage
+  exit 2
+fi
+
+# Fetch the remotes.
+if [[ $fetch -eq 1 ]]; then
+  if [[ -z $remote ]]; then
+    the_remotes=($(git remote))
+  else
+    the_remotes=("$remote")
+  fi
+  for remote in "${the_remotes[@]}"; do
+    git fetch "$remote" --prune --quiet
+  done
+fi
+
+IFS=$'\t'
+git branch --format '%(refname:short)	%(upstream:short)	%(worktreepath)' \
+  | while read branch upstream worktree; do
+    # Skip branches without an upstream branch.
+    if [[ -z $upstream ]]; then
+      continue
+    fi
+
+    # Skip branches that don't match the specified remote.
+    if [[ -n $remote ]] && [[ $upstream != "${remote}"/* ]]; then
+      continue
+    fi
+
+    # Skip branches that are checked out.
+    if [[ -n $worktree ]]; then
+      continue
+    fi
+
+    # If the remote branch doesn't exist, the local branch can be pruned.
+    if ! git branch -r --list "$upstream" | grep -q .; then
+      echo "$branch"
+    fi
+  done \
+  | "${output[@]}"
