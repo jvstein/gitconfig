@@ -10,8 +10,11 @@
     grep = auto
     interactive = auto
     ui = true
+[interactive]
+    diffFilter = delta --color-only
 [merge]
     tool = vimmerge
+    conflictstyle = diff3
 [mergetool]
     trustExitCode = true
     prompt = false
@@ -21,14 +24,20 @@
     cmd = git-vimmerge vim $BASE $LOCAL $REMOTE $MERGED
     trustExitCode = true
 [core]
-#    gitproxy = git-proxy
-    sshCommand = ~/bin/git-ssh
+    pager = delta
 [diff]
+    algorithm = histogram
+    context = 10
     external = git-diff-wrapper
     mnemonicPrefix = true
     renames = copies
     submodule = log
     tool = vimdiff
+    colorMoved = default
+    # Switch this to false after git 2.45 and use srcPrefix and dstPrefix instead.
+    noprefix = true
+    srcPrefix = "SRC "
+    dstPrefix = "DST "
 [diff "exif"]
     textconv = identify -verbose
     cachetextconv = true
@@ -63,17 +72,19 @@
 [alias]
     ca = commit --amend
     can = commit --amend --no-edit
-    cm = commit -m
-    cmn = commit -n -m
+    cm = commit --message
+    cmn = commit --no-verify --message
     co = checkout
     dn = diff --no-ext-diff
     dc = diff --cached
     l = ls-files
-    lol = log --graph --pretty=format:'%C(yellow)%h%C(auto)%d%C(reset) %s %C(cyan)[%an] %C(green)[%ad]%C(reset)' --abbrev-commit --date=relative --author-date-order
-    lolnc = log --graph --pretty=format:'%h%d %s [%ad] [%an]' --abbrev-commit --date=relative --author-date-order
+    lol = log --graph --pretty=format:'%C(yellow)%h%C(auto)%d%C(reset) %s %C(cyan)[%an] %C(green)[%aI] %C(yellow)[%ar]%C(reset)' --abbrev-commit --author-date-order
+    lolnc = log --graph --pretty=format:'%h%d %s [%an] [%aI] [%ar]' --abbrev-commit --author-date-order
     st = status -s
-    sc = log --stat -p -n 1
+    sc = log --stat --patch --max-count=1
     scf = diff-tree --no-commit-id --name-only -r
+    rb = "!f() { BASE=$(git rev-parse --abbrev-ref --symbolic-full-name @{u}); if [ X\"$BASE\" = X\"\" ]; then echo 'no base'; else git rebase -i \"$BASE\"; fi; }; f"
+    rs = "!f() { EDITOR=\"sed -i '2,/^$/s/^pick\\b/s/'\" git rebase -i \"$@\"; }; f"
     ignore = update-index --add --assume-unchanged
     unignore = update-index --no-assume-unchanged
     fixws = !"\
@@ -144,4 +155,23 @@
 [credential]
     helper = cache
 [rebase]
+    autosquash = true
     instructionFormat = %s [%an] [%ad]
+[rerere]
+    enabled = true
+    autoupdate = true
+[delta]
+    navigate = true
+    side-by-side = true
+    line-numbers = true
+    hyperlinks = true
+[transfer]
+    fsckobjects = true
+[fetch]
+    fsckobjects = true
+    prune = true
+    prunetags = true
+[receive]
+    fsckobjects = true
+[log]
+    date = iso
