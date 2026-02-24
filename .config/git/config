@@ -14,7 +14,7 @@
     diffFilter = delta --color-only
 [merge]
     tool = vimmerge
-    conflictstyle = diff3
+    conflictstyle = zdiff3
 [mergetool]
     trustExitCode = true
     prompt = false
